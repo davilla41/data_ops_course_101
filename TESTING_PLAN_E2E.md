@@ -196,41 +196,24 @@ gh auth login
 Acciones que **el docente debe ejecutar manualmente** — quedaron fuera del alcance
 automatizable del scaffold.
 
-### 9.1 🔴 Autenticar GitHub CLI y crear el repositorio remoto
+### 9.1 ✅ Repositorio remoto en GitHub — RESUELTO (31/07/2026)
 
-**Estado:** pendiente al 31/07/2026.
-**Bloqueo:** `gh` quedó instalado (v2.97.0) pero sin sesión iniciada —
-`gh auth status` reporta *"You are not logged into any GitHub hosts"*. La creación del
-repositorio remoto requiere autenticación interactiva por navegador o un token, que no se
-puede resolver de forma desatendida.
+| Campo | Valor |
+|---|---|
+| URL | https://github.com/davilla41/data_ops_course_101 |
+| Visibilidad | **Público** — los estudiantes clonan directamente |
+| Branch por defecto | `main` |
+| Cuenta | `davilla41` (scopes `repo`, `workflow`, `read:org`, `gist`) |
+| Workflow registrado | *Flyway Migrate* — estado `active` |
 
-**Comandos a ejecutar:**
+El scaffold completo (32 archivos) está pusheado y `main` local rastrea `origin/main`.
 
 ```bash
-# 1. Autenticar (flujo interactivo — abre el navegador)
-gh auth login
-
-# 2. Crear el repositorio remoto y enlazarlo con el local
-cd /Users/davidvillanueva/Documents/omorok/jobs/eafit/data_ops_course_101
-gh repo create davilla41/data_ops_course_101 \
-  --public \
-  --source=. \
-  --remote=origin \
-  --description "Módulo DataOps — SI6010-5979 / Pos ST1707 — EAFIT, agosto 2026" \
-  --push
-
-# 3. Verificar
+# Verificación
 git remote -v
-gh repo view davilla41/data_ops_course_101 --web
+gh repo view davilla41/data_ops_course_101
+gh workflow list
 ```
-
-> Alternativa con token: exportar `GH_TOKEN=<token con scope repo>` antes de
-> `gh repo create`, o crear el repositorio por la web y luego
-> `git remote add origin git@github.com:davilla41/data_ops_course_101.git && git push -u origin main`.
-
-**Decisión pendiente:** ¿el repositorio debe ser **público** (los estudiantes lo clonan
-directamente) o **privado** con los estudiantes como colaboradores? El comando de arriba
-asume público; cambiar a `--private` si aplica.
 
 ### 9.2 🟡 Configurar GitHub Secrets del workflow de Flyway
 
@@ -250,12 +233,24 @@ Hasta que existan, el workflow fallará — es el comportamiento esperado, no un
 ### 9.3 🟡 Confirmar la asignación de aulas de los sábados
 
 El programa indica que los sábados alternan entre **34-302** y **33-302**, sin especificar
-cuál corresponde al 01/08. Todo el material asume la secuencia
-`34-302 → 33-302 → 34-302 → 33-302 → 34-302`. **Verificar contra la programación oficial**
-antes de publicar el repositorio a los estudiantes.
+cuál corresponde al 01/08. Todo el material asume, **de forma provisional**, la secuencia:
 
-Archivos a corregir si la secuencia es la inversa: [README.md](README.md) y el `README.md`
-de cada una de las cinco sesiones de sábado.
+| Fecha | Aula asumida |
+|---|---|
+| 01/08 | 34-302 |
+| 08/08 | 33-302 |
+| 15/08 | 34-302 |
+| 22/08 | 33-302 |
+| 29/08 | 34-302 |
+
+Los viernes (14/08, 21/08, 28/08) son siempre **35-203** — ese dato sí está confirmado.
+
+**Estado:** el docente confirmó el 31/07/2026 que la secuencia queda así por ahora y que
+la ajustará tras verificar con la coordinación del programa. **No es bloqueante** para
+generar el contenido de las sesiones.
+
+Archivos a corregir si la secuencia resulta invertida: [README.md](README.md) (tabla de
+cronograma, sección 4) y el `README.md` de cada una de las cinco sesiones de sábado.
 
 ### 9.4 🟡 Provisionar las cuentas cloud del docente
 
@@ -276,5 +271,6 @@ estrecho: **no activar el trial antes del 01/08**.
 
 | Fecha | Secciones ejecutadas | Resultado | Quién |
 |---|---|---|---|
-| 31/07/2026 | 0 — entorno local | ✅ `uv`, `git`, `flyway` OK · ⚠️ `gh` sin autenticar | Scaffold inicial |
+| 31/07/2026 | 0 — entorno local | ✅ `uv` 0.8.15, `git` 2.45.2, `flyway` 13.1.0 instalados y verificados. Stack Python resuelto contra 3.12 sin conflictos. | Scaffold inicial |
+| 31/07/2026 | 9.1 — repositorio remoto | ✅ `davilla41/data_ops_course_101` creado público, 32 archivos pusheados, workflow *Flyway Migrate* registrado como `active` | Scaffold inicial |
 | | | | |

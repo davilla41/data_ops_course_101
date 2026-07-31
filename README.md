@@ -114,8 +114,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 | 8 | 29/08/2026 | Sábado | 08:00–11:00 | 34-302 | **Sustentación Momento 3 — Final** *(evaluativa)* | Cap. 3 |
 
 > **Nota sobre aulas:** los sábados alternan entre las aulas **34-302** y **33-302**; la
-> asignación de la tabla asume que la serie inicia en 34-302 el 01/08. Confirmar contra la
-> programación oficial antes de publicar el repositorio a los estudiantes.
+> asignación de la tabla es **provisional** y asume que la serie inicia en 34-302 el
+> 01/08. Pendiente de confirmación con la coordinación del programa — ver
+> [TESTING_PLAN_E2E.md §9.3](TESTING_PLAN_E2E.md). Los viernes son siempre **35-203**.
 
 ---
 
@@ -203,8 +204,22 @@ Ver el detalle de verificación en [TESTING_PLAN_E2E.md](TESTING_PLAN_E2E.md).
 
 ---
 
-## 8. Estado del repositorio
+## 8. Cómo obtener el repositorio
+
+```bash
+git clone https://github.com/davilla41/data_ops_course_101.git
+cd data_ops_course_101
+```
+
+**Repositorio:** https://github.com/davilla41/data_ops_course_101 (público)
+
+---
+
+## 9. Estado del repositorio
 
 > 🚧 **Scaffold inicial.** Las carpetas de sesión contienen placeholders. El contenido
 > pedagógico (presentaciones, código, datos semilla) se genera sesión por sesión en las
 > iteraciones siguientes.
+
+El detalle de qué está verificado y qué queda pendiente está en
+[TESTING_PLAN_E2E.md](TESTING_PLAN_E2E.md).
