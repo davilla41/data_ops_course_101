@@ -1,0 +1,9 @@
+{
+  // Registra el tema editorial del módulo para la extensión "Marp for VS Code",
+  // de modo que la vista previa coincida con lo que produce marp-cli.
+  // El equivalente para la línea de comandos está en .marprc.yml (themeSet).
+  "markdown.marp.themes": [
+    "./.marp/tema_dataops.css"
+  ],
+  "markdown.marp.enableHtml": true
+}

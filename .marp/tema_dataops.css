@@ -1,0 +1,340 @@
+/* @theme dataops */
+
+/*
+ * Tema editorial del módulo DataOps — SI6010-5979 / Pos ST1707
+ *
+ * Principios de diseño:
+ *   - Fondo blanco, mucho aire. El espacio en blanco es contenido.
+ *   - Serif editorial (Georgia) para títulos; sans-serif para cuerpo.
+ *   - Dos columnas en slides conceptuales: idea a la izquierda, evidencia a la derecha.
+ *   - Listas FACTS de 1-2 bullets como refuerzo — nunca párrafos largos.
+ *   - Footer pequeño, gris, itálico.
+ *
+ * Este tema es la base visual de las 8 sesiones. Para usarlo:
+ *   theme: dataops    (en el frontmatter del .md)
+ * El themeSet está declarado en .marprc.yml en la raíz del repositorio.
+ */
+
+@import 'default';
+
+:root {
+  --tinta: #16181d;
+  --tenue: #6e747d;
+  --acento: #0f6e5c;
+  --acento-suave: #eaf3f1;
+  --linea: #e3e6ea;
+  --alerta: #a4442c;
+  --alerta-suave: #fbf0ec;
+
+  --serif: Georgia, 'Times New Roman', 'Nimbus Roman', serif;
+  --sans: -apple-system, 'Helvetica Neue', 'Segoe UI', Inter, Arial, sans-serif;
+  --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+}
+
+section {
+  background: #ffffff;
+  color: var(--tinta);
+  font-family: var(--sans);
+  font-size: 23px;
+  line-height: 1.55;
+  padding: 60px 70px 72px;
+  justify-content: flex-start;
+  letter-spacing: 0.005em;
+}
+
+/* --- Títulos ------------------------------------------------------------ */
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  color: var(--tinta);
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5em;
+}
+
+h1 { font-size: 1.95em; line-height: 1.15; }
+h2 { font-size: 1.42em; line-height: 1.2; }
+h3 {
+  font-size: 1.02em;
+  font-family: var(--sans);
+  font-weight: 650;
+  color: var(--acento);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.35em;
+}
+
+/* Filete corto bajo el h2 — ancla visual sin cargar el slide. */
+section:not(.portada):not(.cierre) h2::after {
+  content: '';
+  display: block;
+  width: 54px;
+  height: 2px;
+  background: var(--acento);
+  margin-top: 0.42em;
+}
+
+/* --- Cuerpo ------------------------------------------------------------- */
+
+p { margin: 0 0 0.75em; }
+
+ul, ol { margin: 0 0 0.8em; padding-left: 1.15em; }
+li { margin-bottom: 0.42em; }
+li::marker { color: var(--acento); }
+
+strong { font-weight: 650; }
+em { color: var(--tenue); }
+
+a { color: var(--acento); text-decoration: none; border-bottom: 1px solid var(--linea); }
+
+/* --- Layout de dos columnas --------------------------------------------- */
+
+.columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 46px;
+  align-items: start;
+}
+
+.columnas.estrecha-derecha { grid-template-columns: 1.35fr 1fr; }
+.columnas.estrecha-izquierda { grid-template-columns: 1fr 1.35fr; }
+
+/* --- Bloque FACTS ------------------------------------------------------- */
+
+.facts {
+  background: var(--acento-suave);
+  border-left: 3px solid var(--acento);
+  padding: 18px 22px;
+  margin-top: 6px;
+}
+
+.facts h3 { margin-bottom: 0.3em; }
+.facts ul { margin: 0; padding-left: 1.05em; }
+.facts li { margin-bottom: 0.3em; font-size: 0.94em; }
+.facts li:last-child { margin-bottom: 0; }
+
+/* --- Listas de checklist ------------------------------------------------ */
+
+ul.check {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 0.9em;
+}
+
+ul.check li {
+  position: relative;
+  padding-left: 1.6em;
+  margin-bottom: 0.4em;
+}
+
+ul.check li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.32em;
+  width: 0.82em;
+  height: 0.82em;
+  border: 1.5px solid var(--acento);
+  border-radius: 2px;
+}
+
+/* --- Dato visual grande (columna derecha) ------------------------------- */
+
+.dato {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.dato .cifra {
+  display: block;
+  font-family: var(--serif);
+  font-size: 3.3em;
+  line-height: 1;
+  color: var(--acento);
+  letter-spacing: -0.03em;
+}
+
+.dato .glosa {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 0.82em;
+  color: var(--tenue);
+  line-height: 1.4;
+}
+
+/* --- Diagrama ASCII / esquema ------------------------------------------- */
+
+.diagrama {
+  font-family: var(--mono);
+  font-size: 0.72em;
+  line-height: 1.45;
+  color: var(--tinta);
+  background: #fafbfc;
+  border: 1px solid var(--linea);
+  border-radius: 3px;
+  padding: 18px 20px;
+  white-space: pre;
+}
+
+/* --- Aviso -------------------------------------------------------------- */
+
+.aviso {
+  background: var(--alerta-suave);
+  border-left: 3px solid var(--alerta);
+  padding: 14px 20px;
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+
+.aviso strong { color: var(--alerta); }
+
+/* --- Código ------------------------------------------------------------- */
+
+code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: #f4f6f8;
+  padding: 0.1em 0.34em;
+  border-radius: 3px;
+}
+
+pre {
+  background: #fafbfc;
+  border: 1px solid var(--linea);
+  border-radius: 3px;
+  padding: 16px 18px;
+  font-size: 0.68em;
+  line-height: 1.5;
+  overflow: visible;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* --- Tablas ------------------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.86em;
+  margin: 0.3em 0 0.8em;
+}
+
+th {
+  font-family: var(--sans);
+  font-size: 0.84em;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tenue);
+  text-align: left;
+  padding: 8px 12px 8px 0;
+  border-bottom: 1.5px solid var(--tinta);
+}
+
+td {
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid var(--linea);
+  vertical-align: top;
+}
+
+/* El tema `default` de Marp aplica zebra striping. Aquí estorba: en un layout
+   editorial la separación la dan las reglas horizontales, no el relleno. */
+tbody tr, tbody tr:nth-child(even) { background: transparent; }
+
+/* --- Footer y paginación ------------------------------------------------ */
+
+footer {
+  font-family: var(--sans);
+  font-style: italic;
+  font-size: 13px;
+  color: #9aa0a8;
+  left: 70px;
+  bottom: 26px;
+}
+
+section::after {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: #9aa0a8;
+  right: 70px;
+  bottom: 26px;
+  content: attr(data-marpit-pagination);
+}
+
+/* --- Slide de portada --------------------------------------------------- */
+
+section.portada {
+  justify-content: center;
+  padding: 60px 90px;
+}
+
+section.portada h1 {
+  font-size: 2.5em;
+  margin-bottom: 0.22em;
+}
+
+section.portada .kicker {
+  font-family: var(--sans);
+  font-size: 0.8em;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--acento);
+  margin-bottom: 1.4em;
+}
+
+section.portada .subtitulo {
+  font-family: var(--serif);
+  font-size: 1.14em;
+  font-style: italic;
+  color: var(--tenue);
+  max-width: 22em;
+  margin-bottom: 1.7em;
+}
+
+section.portada .meta {
+  font-size: 0.82em;
+  color: var(--tenue);
+  border-top: 1px solid var(--linea);
+  padding-top: 16px;
+  max-width: 30em;
+}
+
+section.portada::after { content: ''; }
+
+/* --- Slide de cierre ---------------------------------------------------- */
+
+section.cierre h2 { color: var(--acento); }
+
+/* --- Slide de sección --------------------------------------------------- */
+
+section.seccion {
+  justify-content: center;
+  text-align: center;
+}
+
+section.seccion h2 {
+  font-size: 2.05em;
+  margin: 0;
+}
+
+section.seccion h2::after { margin: 0.5em auto 0; }
+
+section.seccion .kicker {
+  font-family: var(--sans);
+  font-size: 0.78em;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tenue);
+  margin-bottom: 0.9em;
+}
+
+/* --- Densidad reducida para slides con mucho código --------------------- */
+
+section.compacta { font-size: 21px; padding-top: 48px; }
+section.compacta pre { font-size: 0.63em; }

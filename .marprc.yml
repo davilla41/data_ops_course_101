@@ -1,0 +1,16 @@
+# Configuración de Marp CLI para todo el repositorio.
+# Registra el tema editorial compartido del módulo (.marp/tema_dataops.css),
+# de modo que cualquier presentación pueda declarar `theme: dataops`.
+#
+# Renderizar una presentación:
+#   npx @marp-team/marp-cli@latest Cap_1_.../presentacion/presentacion.md -o salida.html
+#   npx @marp-team/marp-cli@latest Cap_1_.../presentacion/presentacion.md --pdf
+#
+# Previsualizar en vivo mientras se edita:
+#   npx @marp-team/marp-cli@latest -w Cap_1_.../presentacion/presentacion.md
+#
+# En VS Code: instalar la extensión "Marp for VS Code" y agregar en settings.json
+#   "markdown.marp.themes": [".marp/tema_dataops.css"]
+
+themeSet: ./.marp
+allowLocalFiles: true

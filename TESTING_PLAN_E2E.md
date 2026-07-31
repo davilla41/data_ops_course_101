@@ -7,13 +7,11 @@ servicios cloud reales.
 
 ---
 
-> 🚧 **ESQUELETO.** Este documento está intencionalmente incompleto. Los procedimientos
-> paso a paso de cada sesión se redactan **al final de la serie de prompts**, cuando ya
-> exista el código real de cada sesión y se pueda escribir contra artefactos verificables
-> en lugar de contra intenciones.
+> 🚧 **EN CONSTRUCCIÓN.** Cada sección se redacta cuando existe el código real de su
+> sesión, para escribir contra artefactos verificables en lugar de contra intenciones.
 >
-> Lo único completo hoy es la **sección 0** (estado del entorno local, verificado el
-> 31/07/2026) y la **sección 9** (pendientes bloqueantes).
+> **Completas:** sección 0 (entorno local), sección 1 (Sesión 1) y sección 9 (pendientes).
+> **Esqueleto:** secciones 2 a 8.
 
 ---
 
@@ -94,13 +92,177 @@ gh auth login
 
 ## 1. Sesión 1 — Estado base
 
-**Fecha:** 01/08/2026 · **Aula:** 34-302
+**Fecha:** 01/08/2026 · **Aula:** 34-302 · **Estado:** ✅ verificado localmente el 31/07/2026;
+🔴 pendiente la verificación contra Neon (requiere intervención humana — ver §1.4).
 
 ### 1.1 Precondiciones
-### 1.2 Verificación local
-### 1.3 Verificación contra Neon.tech *(human-in-the-loop)*
-### 1.4 Criterios de aceptación
-### 1.5 Problemas conocidos y workarounds
+
+| # | Condición | Comando de verificación | Estado 31/07/2026 |
+|---|---|---|---|
+| P1 | `uv` instalado | `uv --version` | ✅ 0.8.15 |
+| P2 | Los 5 JSON semilla presentes | `ls data/*.json \| wc -l` → `5` | ✅ |
+| P3 | Proyecto `uv` de la sesión sincronizable | `cd .../codigo && uv sync` | ✅ Python 3.12.13, 2 paquetes |
+| P4 | Node ≥ 18 (solo para renderizar la presentación) | `node --version` | ✅ v18.15.0 |
+| P5 | Proyecto de Neon con branches `main` y `dev` | Neon Console | 🔴 **pendiente** |
+
+### 1.2 Verificación local — datos semilla
+
+Ejecutado el 31/07/2026. No requiere base de datos.
+
+```bash
+python3 - <<'PY'
+import json
+L = lambda f: json.load(open(f'data/{f}.json'))
+reg, sr, ac, od, we = L('regions'), L('sales_reps'), L('accounts'), L('orders'), L('web_events')
+assert not [r for r in sr if r['region_id'] not in {x['id'] for x in reg}]
+assert not [a for a in ac if a['sales_rep_id'] not in {x['id'] for x in sr}]
+assert not [o for o in od if o['account_id'] not in {x['id'] for x in ac}]
+assert not [w for w in we if w['account_id'] not in {x['id'] for x in ac}]
+print('OK', [len(x) for x in (reg, sr, ac, od, we)])
+PY
+```
+
+**Resultado esperado:** `OK [4, 50, 351, 6912, 9073]`
+**Resultado obtenido:** ✅ coincide. Sin huérfanos, sin nulos, `id` únicos en las 5 tablas.
+
+### 1.3 Verificación local — el script contra PostgreSQL efímero
+
+Ejecutado el 31/07/2026 contra `postgres:16-alpine` en Docker. **Esto no reemplaza la
+verificación contra Neon**, pero valida toda la lógica del script sin depender de la nube.
+
+```bash
+docker run -d --name pg_dataops_test \
+  -e POSTGRES_PASSWORD=test -e POSTGRES_DB=parch_posey \
+  -p 55432:5432 postgres:16-alpine
+
+cd Cap_1_Fundamentos_DataOps/sesion_01_estado_base/codigo
+uv sync
+export NEON_DEV_DATABASE_URL="postgresql://postgres:test@localhost:55432/parch_posey"
+
+uv run inyeccion_semilla.py --solo-verificar   # A
+uv run inyeccion_semilla.py                    # B
+uv run inyeccion_semilla.py                    # C — idempotencia
+NEON_MAIN_DATABASE_URL="$NEON_DEV_DATABASE_URL" uv run inyeccion_semilla.py   # D — guardrail
+
+docker rm -f pg_dataops_test
+```
+
+| Caso | Esperado | Obtenido |
+|---|---|---|
+| A — base vacía | Las 5 tablas como `(no existe)`, exit 0 | ✅ |
+| B — carga inicial | 16 390 filas, todos los conteos `OK`, exit 0 | ✅ en 0.56 s |
+| C — re-ejecución | Mismos conteos, sin duplicados, exit 0 | ✅ |
+| D — guardrail `dev`==`main` | Aborta con mensaje explícito, **exit 1** | ✅ |
+
+Comprobaciones adicionales sobre los datos ya cargados:
+
+| Verificación | Esperado | Obtenido |
+|---|---|---|
+| Truncado de timestamp de 7 dígitos | `2015-10-06T17:31:14.0000000` → `2015-10-06 17:31:14` | ✅ |
+| Precisión de `lat` / `long` | `40.23849561` / `-75.10329704` sin pérdida | ✅ |
+| Tipos en `accounts` | `integer`, `text`, `numeric` — ningún `TEXT` numérico | ✅ |
+| Foreign keys creadas | 4 | ✅ |
+| Rango de `orders.occurred_at` | 2013-12-04 → 2017-01-02 | ✅ |
+| Canales distintos en `web_events` | 6 | ✅ |
+
+### 1.4 🛑 PUNTO DE PARADA — se requiere intervención humana
+
+**Aquí el trabajo automatizable se agota.** Crear un proyecto en Neon exige un flujo
+interactivo por navegador (registro, verificación de correo, selección de región): no hay
+forma desatendida de hacerlo, y este scaffold no debe tocar servicios cloud reales por
+iniciativa propia.
+
+#### Lo que debe hacer el docente
+
+1. Entrar a https://console.neon.tech y crear el proyecto:
+   - **Name:** `parch_posey_dataops` · **Postgres:** 16 · **Region:** AWS `us-east-2`
+2. **Branches** → **Create branch**: nombre `dev`, parent `main`, *Current point in time*.
+3. Copiar los dos connection strings (**Dashboard** → **Connection string**, cambiando la
+   branch en el desplegable).
+
+#### Comando exacto para entregar las credenciales
+
+Desde la raíz del repositorio. `read -rs` evita que el connection string quede en el
+historial del shell o visible en pantalla:
+
+```bash
+cd Cap_1_Fundamentos_DataOps/sesion_01_estado_base/codigo
+cp -n .env.example .env && : > .env
+
+read -rs -p "Connection string de la branch dev:  " U && \
+  printf 'NEON_DEV_DATABASE_URL=%s\n'  "$U" >> .env && unset U && echo
+
+read -rs -p "Connection string de la branch main: " U && \
+  printf 'NEON_MAIN_DATABASE_URL=%s\n' "$U" >> .env && unset U && echo
+
+# Confirmar que quedó bien SIN exponer las contraseñas:
+sed -E 's#://[^:]+:[^@]+@#://***:***@#' .env
+```
+
+La última línea debe mostrar dos URLs enmascaradas **con hosts distintos**. Si los hosts
+coinciden, no se cambió el desplegable de branch en el Console.
+
+> **Sobre el manejo del secreto.** `.env` está excluido en el
+> [`.gitignore`](.gitignore) raíz — confirmar con `git status --ignored | grep .env`.
+> Cualquiera con acceso a esta sesión de terminal puede leer el archivo; si eso importa,
+> usar una branch de Neon desechable y resetear la contraseña al terminar
+> (**Neon Console** → **Roles** → **Reset password**).
+
+#### Lo que se ejecuta después de recibir las credenciales
+
+```bash
+cd Cap_1_Fundamentos_DataOps/sesion_01_estado_base/codigo
+
+uv run inyeccion_semilla.py --solo-verificar    # 1. dev debe estar vacía
+uv run inyeccion_semilla.py                     # 2. carga real
+uv run inyeccion_semilla.py --solo-verificar    # 3. confirmar 16 390 filas
+```
+
+Y la comprobación de aislamiento, que es el objetivo pedagógico de la sesión:
+
+```bash
+# Debe reportar las 5 tablas como (no existe): main nunca se tocó.
+NEON_DEV_DATABASE_URL="$(grep '^NEON_MAIN_DATABASE_URL=' .env | cut -d= -f2-)" \
+  uv run inyeccion_semilla.py --solo-verificar
+```
+
+### 1.5 Verificación de la presentación
+
+```bash
+# desde la raíz del repositorio
+npx @marp-team/marp-cli@latest \
+  Cap_1_Fundamentos_DataOps/sesion_01_estado_base/presentacion/presentacion.md \
+  --images png -o /tmp/slides/s.png
+```
+
+| Verificación | Esperado | Obtenido 31/07/2026 |
+|---|---|---|
+| Renderiza sin errores | exit 0 | ✅ |
+| Número de slides | 15 | ✅ |
+| Tema `dataops` aplicado (no fallback a `default`) | Serif en títulos, filete verde, footer gris itálico | ✅ |
+| Ningún slide desborda el área visible | Revisión visual de los 15 PNG | ✅ tras corregir slides 4, 5, 9 y 11 |
+
+### 1.6 Criterios de aceptación
+
+- [x] Los 5 JSON semilla tienen integridad referencial completa y 16 390 registros.
+- [x] `uv sync` reconstruye el entorno desde `uv.lock` en una máquina limpia.
+- [x] El script crea el schema y carga los datos en una sola transacción.
+- [x] Re-ejecutar el script no duplica datos.
+- [x] El guardrail aborta con exit 1 cuando `dev` y `main` coinciden.
+- [x] La presentación renderiza a 15 slides sin desbordes.
+- [ ] 🔴 La carga funciona contra una branch `dev` real de Neon *(requiere §1.4)*.
+- [ ] 🔴 La branch `main` queda vacía tras la carga *(requiere §1.4)*.
+
+### 1.7 Problemas conocidos y workarounds
+
+| Síntoma | Causa | Solución |
+|---|---|---|
+| `SSL connection has been closed unexpectedly` | Falta `?sslmode=require` en el connection string | Copiar la URL completa del Console, no armarla a mano |
+| La primera query tarda ~1 s o da timeout | Neon suspende el cómputo por inactividad; la branch está despertando | Reintentar. Es comportamiento normal, no un error |
+| `ERROR: falta la variable NEON_DEV_DATABASE_URL` | No existe `.env`, o se ejecutó desde otro directorio | `cp .env.example .env` dentro de `codigo/` |
+| `No se encontró la raíz del repositorio` | El script se ejecutó fuera del clon de git (ej. copiado a otra carpeta) | Ejecutar dentro del repositorio; el script busca `.git/` + `data/` subiendo por el árbol |
+| El guardrail aborta con credenciales correctas | Se pegó el mismo connection string en ambas variables | Volver al Console y cambiar el desplegable de branch antes de copiar |
+| `Marp: unknown theme "dataops"` en VS Code | Falta registrar el themeSet en el workspace | Ya resuelto en [`.vscode/settings.json`](.vscode/settings.json); recargar la ventana |
 
 ---
 
@@ -261,9 +423,20 @@ trial, dbt Cloud.
 aproximadamente el **31/08** — apenas después de la sesión final del 29/08. Margen
 estrecho: **no activar el trial antes del 01/08**.
 
-### 9.5 🟢 Agregar los datos semilla de Parch & Posey
+### 9.5 ✅ Datos semilla de Parch & Posey — RESUELTO (31/07/2026)
 
-[`data/`](data/) tiene solo su README. Los CSV se agregan con el contenido de la Sesión 1.
+Los cinco archivos JSON están en [`data/`](data/) y verificados: 16 390 registros,
+integridad referencial completa, sin nulos, `id` únicos. Ver [`data/README.md`](data/README.md)
+y la sección §1.2 de este documento.
+
+### 9.6 🔴 Aprovisionar el proyecto de Neon para la Sesión 1
+
+**Estado:** pendiente al 31/07/2026. Es el bloqueante activo del curso.
+
+Sin un proyecto de Neon con branches `main` y `dev` no se puede cerrar la verificación de
+la Sesión 1 ni empezar la Sesión 2 (el baseline de Flyway sale del schema cargado en `dev`).
+
+El procedimiento y los comandos exactos están en **§1.4**.
 
 ---
 
@@ -273,4 +446,5 @@ estrecho: **no activar el trial antes del 01/08**.
 |---|---|---|---|
 | 31/07/2026 | 0 — entorno local | ✅ `uv` 0.8.15, `git` 2.45.2, `flyway` 13.1.0 instalados y verificados. Stack Python resuelto contra 3.12 sin conflictos. | Scaffold inicial |
 | 31/07/2026 | 9.1 — repositorio remoto | ✅ `davilla41/data_ops_course_101` creado público, 32 archivos pusheados, workflow *Flyway Migrate* registrado como `active` | Scaffold inicial |
-| | | | |
+| 31/07/2026 | 1.2, 1.3, 1.5 — Sesión 1 local | ✅ Semilla íntegra (16 390 reg.). Script validado contra `postgres:16-alpine`: carga, idempotencia, guardrail y tipos. Presentación: 15 slides sin desbordes | Contenido Sesión 1 |
+| — | 1.4 — Sesión 1 contra Neon | 🔴 Pendiente: requiere que el docente cree el proyecto (ver §9.6) | — |

@@ -103,8 +103,11 @@ data/tmp/
 Thumbs.db
 desktop.ini
 .idea/
-.vscode/
+# Nota: `.vscode/*` y no `.vscode/` — git no desciende a un directorio excluido,
+# así que las excepciones de abajo solo funcionan si se ignora el contenido, no la carpeta.
+.vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 *.swp
 *.swo
 
