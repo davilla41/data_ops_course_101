@@ -73,10 +73,15 @@ Neon, con Serverless Postgres ni con `uv`.
 | Ruta | Qué es |
 |---|---|
 | [presentacion/presentacion.md](presentacion/presentacion.md) | Presentación en formato Marp (15 slides) |
+| [presentacion/markmap.html](presentacion/markmap.html) | Mapa mental introductorio de DataOps — ábrelo en el navegador |
 | [codigo/inyeccion_semilla.py](codigo/inyeccion_semilla.py) | Script de creación del schema y carga de la semilla |
 | [codigo/pyproject.toml](codigo/pyproject.toml) | Definición del proyecto `uv` y sus dependencias |
 | [codigo/.env.example](codigo/.env.example) | Plantilla de variables de entorno — cópiala a `.env` |
 | [../../data/](../../data/) | Datos semilla de Parch & Posey en JSON |
+| [../../er_model.png](../../er_model.png) | Diagrama entidad-relación del modelo |
+
+> 🪟 **En Windows**, configura Git Bash antes de empezar: [WINDOWS_USERS.md](../../WINDOWS_USERS.md).
+> El `markmap.html` necesita conexión a internet — carga sus librerías desde un CDN.
 
 ---
 
@@ -151,6 +156,10 @@ En el Neon Console:
 ---
 
 ## El modelo de datos resultante
+
+Versión visual: [`er_model.png`](../../er_model.png) — ⚠️ pendiente de corregir; nombra
+`region` en singular y omite `orders.occurred_at` y `orders.gloss_qty`. La fuente de verdad
+es el DDL del script.
 
 ```
 regions (4)

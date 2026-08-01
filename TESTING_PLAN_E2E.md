@@ -482,6 +482,23 @@ Detalle de la verificación en **§1.4**.
 
 ---
 
+### 9.7 🟡 Corregir `er_model.png`
+
+El diagrama entidad-relación no coincide con el schema que crea
+[`inyeccion_semilla.py`](Cap_1_Fundamentos_DataOps/sesion_01_estado_base/codigo/inyeccion_semilla.py):
+
+| En el diagrama | En la base real | Impacto |
+|---|---|---|
+| Tabla `region` | Tabla `regions` | Confunde al escribir queries y `sources` de dbt |
+| `orders` sin `occurred_at` | `orders` sí la tiene | Es el cursor del incremental model de la Sesión 7 |
+| `orders` sin `gloss_qty` | `orders` sí la tiene | Es una de las tres líneas de producto del caso |
+
+Está enlazado desde [`data/README.md`](data/README.md) y desde el README de la Sesión 1,
+ambos con la advertencia correspondiente. **Corregir antes de publicarlo a los
+estudiantes** y retirar entonces las advertencias.
+
+---
+
 ## 10. Registro de ejecuciones del plan
 
 | Fecha | Secciones ejecutadas | Resultado | Quién |

@@ -6,19 +6,25 @@ didáctico para SQL analítico.
 
 ## Modelo de datos
 
-Cinco tablas relacionadas:
+Cinco tablas relacionadas — diagrama visual en [`er_model.png`](../er_model.png):
 
 | Tabla | Descripción | Llave | Relación |
 |---|---|---|---|
-| `region` | Regiones comerciales | `id` | — |
-| `sales_reps` | Representantes de ventas | `id` | `region_id` → `region.id` |
+| `regions` | Regiones comerciales | `id` | — |
+| `sales_reps` | Representantes de ventas | `id` | `region_id` → `regions.id` |
 | `accounts` | Cuentas de clientes | `id` | `sales_rep_id` → `sales_reps.id` |
-| `orders` | Órdenes de compra, con cantidades y montos por línea de producto (standard, gloss, poster) | `id` | `account_id` → `accounts.id` |
-| `web_events` | Eventos de visita web por canal (organic, adwords, direct, facebook, twitter, banner) | `id` | `account_id` → `accounts.id` |
+| `orders` | Órdenes de compra, con `occurred_at` y cantidades/montos por línea de producto (standard, gloss, poster) | `id` | `account_id` → `accounts.id` |
+| `web_events` | Eventos de visita web con `occurred_at` y canal (organic, adwords, direct, facebook, twitter, banner) | `id` | `account_id` → `accounts.id` |
 
-Volumen aproximado: ~7 000 órdenes, ~9 000 eventos web, ~350 cuentas. Es un dataset
-pequeño **a propósito** — el foco del módulo es la ingeniería del pipeline, no el
-procesamiento de gran volumen.
+Volumen: 4 regiones, 50 representantes, 351 cuentas, 6 912 órdenes y 9 073 eventos web. Es
+un dataset pequeño **a propósito** — el foco del módulo es la ingeniería del pipeline, no
+el procesamiento de gran volumen.
+
+> ⚠️ **`er_model.png` está desactualizado.** Nombra la tabla `region` en singular y omite
+> `orders.occurred_at` y `orders.gloss_qty`. La fuente de verdad del schema es el DDL de
+> [`inyeccion_semilla.py`](../Cap_1_Fundamentos_DataOps/sesion_01_estado_base/codigo/inyeccion_semilla.py).
+> Pendiente de corregir antes de publicarlo a los estudiantes — ver §9.7 del
+> [plan de testing](../TESTING_PLAN_E2E.md).
 
 ## Contenido
 

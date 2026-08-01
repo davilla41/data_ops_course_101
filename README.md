@@ -125,7 +125,10 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 data_ops_course_101/
 ├── README.md                          ← este archivo
+├── WINDOWS_USERS.md                   ← configuración de Git Bash (obligatorio en Windows)
 ├── TESTING_PLAN_E2E.md                ← plan de verificación E2E (human-in-the-loop)
+├── er_model.png                       ← diagrama entidad-relación de Parch & Posey
+├── .marp/tema_dataops.css             ← tema editorial de las presentaciones
 ├── .github/workflows/
 │   └── flyway-migrate.yml             ← plantilla de CI/CD para migraciones
 ├── data/                              ← datos semilla de Parch & Posey
@@ -149,7 +152,7 @@ data_ops_course_101/
 Cada carpeta de sesión contiene:
 
 - `README.md` — guía de la sesión: objetivo, agenda, prerrequisitos, pasos.
-- `presentacion/` — material de exposición.
+- `presentacion/` — material de exposición (`presentacion.md` en Marp y apoyos visuales).
 - `codigo/` o `proyecto/` — artefactos ejecutables de la sesión *(solo sesiones de contenido)*.
 - `rubrica.md` — criterios de calificación *(solo sesiones evaluativas)*.
 
@@ -200,6 +203,10 @@ brew install flyway
 brew install gh && gh auth login
 ```
 
+> 🪟 **¿Trabajas en Windows?** Lee **[WINDOWS_USERS.md](WINDOWS_USERS.md) antes de la
+> primera sesión.** Es obligatorio usar **Git Bash** como terminal: todos los comandos del
+> curso están escritos para shells POSIX y fallan en PowerShell o CMD.
+
 Ver el detalle de verificación en [TESTING_PLAN_E2E.md](TESTING_PLAN_E2E.md).
 
 ---
@@ -217,9 +224,10 @@ cd data_ops_course_101
 
 ## 9. Estado del repositorio
 
-> 🚧 **Scaffold inicial.** Las carpetas de sesión contienen placeholders. El contenido
-> pedagógico (presentaciones, código, datos semilla) se genera sesión por sesión en las
-> iteraciones siguientes.
+| Sesión | Estado |
+|---|---|
+| 1 — Estado base | ✅ Completa y verificada de extremo a extremo contra Neon |
+| 2 a 8 | 🚧 Placeholder — se generan sesión por sesión |
 
 El detalle de qué está verificado y qué queda pendiente está en
 [TESTING_PLAN_E2E.md](TESTING_PLAN_E2E.md).
