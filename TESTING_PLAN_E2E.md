@@ -92,8 +92,8 @@ gh auth login
 
 ## 1. Sesión 1 — Estado base
 
-**Fecha:** 01/08/2026 · **Aula:** 34-302 · **Estado:** ✅ verificado localmente el 31/07/2026;
-🔴 pendiente la verificación contra Neon (requiere intervención humana — ver §1.4).
+**Fecha:** 01/08/2026 · **Aula:** 34-302 · **Estado:** ✅ **verificado de extremo a extremo**
+el 31/07/2026, incluida la carga contra Neon real y la comprobación de aislamiento.
 
 ### 1.1 Precondiciones
 
@@ -103,7 +103,7 @@ gh auth login
 | P2 | Los 5 JSON semilla presentes | `ls data/*.json \| wc -l` → `5` | ✅ |
 | P3 | Proyecto `uv` de la sesión sincronizable | `cd .../codigo && uv sync` | ✅ Python 3.12.13, 2 paquetes |
 | P4 | Node ≥ 18 (solo para renderizar la presentación) | `node --version` | ✅ v18.15.0 |
-| P5 | Proyecto de Neon con branches `main` y `dev` | Neon Console | 🔴 **pendiente** |
+| P5 | Proyecto de Neon con branches `main` y `dev` | Neon Console | ✅ `parch_posey_dataops`, AWS us-east-2 |
 
 ### 1.2 Verificación local — datos semilla
 
@@ -169,38 +169,57 @@ Comprobaciones adicionales sobre los datos ya cargados:
 
 **Aquí el trabajo automatizable se agota.** Crear un proyecto en Neon exige un flujo
 interactivo por navegador (registro, verificación de correo, selección de región): no hay
-forma desatendida de hacerlo, y este scaffold no debe tocar servicios cloud reales por
+forma desatendida de hacerlo, y este plan no debe tocar servicios cloud reales por
 iniciativa propia.
 
 #### Lo que debe hacer el docente
 
 1. Entrar a https://console.neon.tech y crear el proyecto:
    - **Name:** `parch_posey_dataops` · **Postgres:** 16 · **Region:** AWS `us-east-2`
-2. **Branches** → **Create branch**: nombre `dev`, parent `main`, *Current point in time*.
-3. Copiar los dos connection strings (**Dashboard** → **Connection string**, cambiando la
-   branch en el desplegable).
+   - **Neon Auth:** desactivado. Añadiría un schema `neon_auth` que luego habría que
+     excluir del baseline de Flyway en la Sesión 2.
+2. **Renombrar la branch por defecto de `production` a `main`.** Neon la crea como
+   `production`; todo el material del curso asume `main`, para que el paralelo con git
+   sea literal.
+3. **Branches** → **Create branch**:
+   - **Name:** `dev` · **Parent:** `main` · **Branch data and schema**
+   - ⚠️ **Auto-delete: `Never`.** El valor por defecto (*After 1 day*) destruiría la
+     branch —y el baseline de la Sesión 2— al día siguiente.
+4. Copiar los dos connection strings (**Dashboard** → **Connection string**, cambiando la
+   branch en el desplegable). Usar **Show password**: con la contraseña oculta se copian
+   los asteriscos.
 
-#### Comando exacto para entregar las credenciales
+#### Cómo entregar las credenciales
 
-Desde la raíz del repositorio. `read -rs` evita que el connection string quede en el
-historial del shell o visible en pantalla:
+Crear el archivo `.env` y **pegar los valores con un editor**:
 
 ```bash
 cd Cap_1_Fundamentos_DataOps/sesion_01_estado_base/codigo
-cp -n .env.example .env && : > .env
+cp .env.example .env
+code .env        # o el editor que prefieras
+```
 
-read -rs -p "Connection string de la branch dev:  " U && \
-  printf 'NEON_DEV_DATABASE_URL=%s\n'  "$U" >> .env && unset U && echo
+Debe quedar una variable por línea, sin comillas y sin espacios alrededor del `=`:
 
-read -rs -p "Connection string de la branch main: " U && \
-  printf 'NEON_MAIN_DATABASE_URL=%s\n' "$U" >> .env && unset U && echo
+```dotenv
+NEON_DEV_DATABASE_URL=postgresql://usuario:password@ep-xxxx-dev...aws.neon.tech/neondb?sslmode=require
+NEON_MAIN_DATABASE_URL=postgresql://usuario:password@ep-yyyy...aws.neon.tech/neondb?sslmode=require
+```
 
-# Confirmar que quedó bien SIN exponer las contraseñas:
+Verificar sin exponer las contraseñas:
+
+```bash
 sed -E 's#://[^:]+:[^@]+@#://***:***@#' .env
 ```
 
-La última línea debe mostrar dos URLs enmascaradas **con hosts distintos**. Si los hosts
-coinciden, no se cambió el desplegable de branch en el Console.
+Deben aparecer dos URLs enmascaradas **con hosts distintos**. Si coinciden, no se cambió
+el desplegable de branch en el Console.
+
+> ⚠️ **No usar `read -rs` para esto.** Se intentó y falla: al pegar un bloque de varias
+> líneas en la terminal, `read` no espera input del teclado — consume la línea siguiente
+> del propio pegado y la guarda como si fuera el connection string. El `.env` termina
+> conteniendo el texto del comando. Editar el archivo directamente es más simple y no
+> tiene ese modo de fallo.
 
 > **Sobre el manejo del secreto.** `.env` está excluido en el
 > [`.gitignore`](.gitignore) raíz — confirmar con `git status --ignored | grep .env`.
@@ -218,13 +237,23 @@ uv run inyeccion_semilla.py                     # 2. carga real
 uv run inyeccion_semilla.py --solo-verificar    # 3. confirmar 16 390 filas
 ```
 
-Y la comprobación de aislamiento, que es el objetivo pedagógico de la sesión:
+Y la comprobación de aislamiento, que es el objetivo pedagógico de la sesión. Se apunta la
+variable de dev al connection string de main y se vacía la de main para no disparar el
+guardrail (la ejecución es de solo lectura):
 
 ```bash
-# Debe reportar las 5 tablas como (no existe): main nunca se tocó.
 NEON_DEV_DATABASE_URL="$(grep '^NEON_MAIN_DATABASE_URL=' .env | cut -d= -f2-)" \
+NEON_MAIN_DATABASE_URL="" \
   uv run inyeccion_semilla.py --solo-verificar
 ```
+
+**Ejecutado el 31/07/2026 contra el proyecto real:**
+
+| Verificación | Esperado | Obtenido |
+|---|---|---|
+| Carga contra la branch `dev` | 16 390 filas, todos los conteos `OK` | ✅ |
+| Estado de `dev` tras la carga | `4 / 50 / 351 / 6912 / 9073` | ✅ |
+| Estado de `main` tras la carga | Las 5 tablas como `(no existe)` | ✅ **aislamiento confirmado** |
 
 ### 1.5 Verificación de la presentación
 
@@ -250,13 +279,18 @@ npx @marp-team/marp-cli@latest \
 - [x] Re-ejecutar el script no duplica datos.
 - [x] El guardrail aborta con exit 1 cuando `dev` y `main` coinciden.
 - [x] La presentación renderiza a 15 slides sin desbordes.
-- [ ] 🔴 La carga funciona contra una branch `dev` real de Neon *(requiere §1.4)*.
-- [ ] 🔴 La branch `main` queda vacía tras la carga *(requiere §1.4)*.
+- [x] La carga funciona contra una branch `dev` real de Neon.
+- [x] La branch `main` queda vacía tras la carga — el aislamiento del branching funciona.
+
+**Sesión 1 verificada de extremo a extremo.** No quedan pendientes.
 
 ### 1.7 Problemas conocidos y workarounds
 
 | Síntoma | Causa | Solución |
 |---|---|---|
+| El `.env` contiene el texto del comando en vez del connection string | Se usó `read -rs` pegando un bloque multilínea: `read` consumió la línea siguiente del pegado | Editar `.env` directamente en el editor — ver §1.4 |
+| La branch `dev` desapareció al día siguiente | Se dejó **Auto-delete: After 1 day** al crearla | Recrearla con **Auto-delete: Never** y volver a cargar la semilla |
+| Se copian asteriscos en lugar de la contraseña | El Console oculta la contraseña por defecto | Pulsar **Show password** antes de copiar |
 | `SSL connection has been closed unexpectedly` | Falta `?sslmode=require` en el connection string | Copiar la URL completa del Console, no armarla a mano |
 | La primera query tarda ~1 s o da timeout | Neon suspende el cómputo por inactividad; la branch está despertando | Reintentar. Es comportamiento normal, no un error |
 | `ERROR: falta la variable NEON_DEV_DATABASE_URL` | No existe `.env`, o se ejecutó desde otro directorio | `cp .env.example .env` dentro de `codigo/` |
@@ -429,14 +463,22 @@ Los cinco archivos JSON están en [`data/`](data/) y verificados: 16 390 registr
 integridad referencial completa, sin nulos, `id` únicos. Ver [`data/README.md`](data/README.md)
 y la sección §1.2 de este documento.
 
-### 9.6 🔴 Aprovisionar el proyecto de Neon para la Sesión 1
+### 9.6 ✅ Proyecto de Neon para la Sesión 1 — RESUELTO (31/07/2026)
 
-**Estado:** pendiente al 31/07/2026. Es el bloqueante activo del curso.
+| Campo | Valor |
+|---|---|
+| Proyecto | `parch_posey_dataops` · Postgres 16 · AWS `us-east-2` |
+| Branch principal | `main` — renombrada desde `production`; **vacía** |
+| Branch de trabajo | `dev` — con el estado base cargado (16 390 filas) |
+| Neon Auth | Desactivado |
 
-Sin un proyecto de Neon con branches `main` y `dev` no se puede cerrar la verificación de
-la Sesión 1 ni empezar la Sesión 2 (el baseline de Flyway sale del schema cargado en `dev`).
+Detalle de la verificación en **§1.4**.
 
-El procedimiento y los comandos exactos están en **§1.4**.
+> ℹ️ **Nota para la Sesión 2.** Los connection strings en uso son los de endpoint
+> **`-pooler`**. Funcionan para la carga con psycopg2, pero Neon recomienda la conexión
+> **directa** (sin `-pooler`) para DDL y migraciones. Si Flyway se comporta de forma
+> extraña, ese es el primer sospechoso: probar el endpoint directo antes de investigar
+> otra cosa.
 
 ---
 
@@ -447,4 +489,4 @@ El procedimiento y los comandos exactos están en **§1.4**.
 | 31/07/2026 | 0 — entorno local | ✅ `uv` 0.8.15, `git` 2.45.2, `flyway` 13.1.0 instalados y verificados. Stack Python resuelto contra 3.12 sin conflictos. | Scaffold inicial |
 | 31/07/2026 | 9.1 — repositorio remoto | ✅ `davilla41/data_ops_course_101` creado público, 32 archivos pusheados, workflow *Flyway Migrate* registrado como `active` | Scaffold inicial |
 | 31/07/2026 | 1.2, 1.3, 1.5 — Sesión 1 local | ✅ Semilla íntegra (16 390 reg.). Script validado contra `postgres:16-alpine`: carga, idempotencia, guardrail y tipos. Presentación: 15 slides sin desbordes | Contenido Sesión 1 |
-| — | 1.4 — Sesión 1 contra Neon | 🔴 Pendiente: requiere que el docente cree el proyecto (ver §9.6) | — |
+| 31/07/2026 | 1.4 — Sesión 1 contra Neon | ✅ Proyecto `parch_posey_dataops` creado. Carga en `dev` correcta (16 390 filas); `main` verificada vacía — aislamiento confirmado | Docente + verificación asistida |
