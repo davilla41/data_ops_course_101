@@ -118,3 +118,4 @@ desktop.ini
 
 # Configuración local de Claude Code (por máquina, no compartida)
 .claude/settings.local.json
+flyway.conf.example
