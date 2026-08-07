@@ -8,14 +8,17 @@
 
 ## Objetivo
 
-Sustentar el pipeline de CI/CD en base de datos (Neon + Flyway + GitHub Actions)
-construido en las sesiones 1 y 2, mediante demo en vivo y defensa de las decisiones
-técnicas tomadas.
+Sustentar el pipeline de CI/CD en base de datos (Neon + Flyway + GitHub Actions),
+construido con el mismo patrón de las sesiones 1 y 2 pero aplicado sobre un **dominio de
+negocio propio** de cada equipo — no Parch & Posey —, mediante demo en vivo y defensa de
+las decisiones técnicas tomadas.
 
 ## Formato
 
 - **Peso:** 30 % de la nota final.
-- **Duración por equipo:** 10 min de exposición + 5 min de preguntas.
+- **Modalidad:** equipos de 3–4 personas, conformados en clase.
+- **Duración por equipo:** 10 min de exposición (incluye una breve introducción del
+  dominio de negocio elegido) + 5 min de preguntas.
 - **Fecha límite de código:** 14/08/2026, 17:00 — se evalúa el estado de `main` en ese
   instante.
 - **Demo en vivo obligatoria.** Las capturas no sustituyen la ejecución.
