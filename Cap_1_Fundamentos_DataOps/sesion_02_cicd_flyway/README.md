@@ -125,11 +125,19 @@ tabla.**
 ### 2. Primera migración versionada
 
 ```bash
-flyway info      # qué está pendiente
-flyway migrate   # aplicarlo
+flyway info                          # qué está pendiente
+flyway migrate -target=202608081000  # aplicar solo hasta aquí
 ```
 
 Aplica `V202608081000` y, detrás, los dos repetibles.
+
+> ⚠️ **Por qué `-target` y no un `flyway migrate` a secas.** Este repositorio entrega las
+> 4 migraciones completas desde el día uno — incluida `V202608081100`, el fix del paso 5.
+> En un proyecto real ese archivo **no existiría todavía** en este punto de la historia: se
+> escribe recién después de descubrir el error. Un `flyway migrate` sin `-target` aplicaría
+> las 4 de una sola vez y el fallo del paso 3 nunca ocurriría — el bug ya vendría corregido.
+> `-target` le dice a Flyway "llega hasta aquí y detente", que es la forma correcta de
+> reproducir la cronología sin editar ni ocultar archivos.
 
 ### 3. Provocar el fallo
 
@@ -158,7 +166,8 @@ Migration checksum mismatch for migration version 202608081000
 
 ### 5. Roll forward
 
-`V202608081100__fix_web_events_utm_length.sql` ya está en el repositorio:
+`V202608081100__fix_web_events_utm_length.sql` ya estaba en el repositorio — lo que faltaba
+era aplicarlo. Ahora sí, sin `-target`, para que Flyway tome todo lo pendiente:
 
 ```bash
 flyway migrate

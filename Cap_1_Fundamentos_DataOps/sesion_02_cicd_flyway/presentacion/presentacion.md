@@ -262,22 +262,21 @@ El índice es compuesto porque la query filtra por cuenta **y** ordena por fecha
 <div>
 
 ```bash
-flyway info      # ver qué está pendiente
-flyway migrate   # aplicarlo
+flyway info
+flyway migrate -target=202608081000
 ```
 
 ```text
 Migrating schema "public" to version
 "202608081000 - add index and col"
-Successfully applied 1 migration
 ```
 
 <div class="facts">
 
 ### Facts
 
-- `info` **antes** de `migrate`, siempre. Te dice qué va a pasar antes de que pase.
-- La columna admite NULL a propósito: los 9 073 eventos históricos no tienen campaña *conocida*, que no es lo mismo que no tener campaña.
+- **`-target` es clave hoy.** El archivo del fix ya está en el repo desde el inicio. Sin `-target`, `migrate` lo aplicaría de una vez y el fallo del Paso 4 nunca ocurriría.
+- La columna admite NULL a propósito: los eventos históricos no tienen campaña *conocida*, que no es lo mismo que no tener campaña.
 
 </div>
 </div>
@@ -296,12 +295,11 @@ Dos objetos nuevos, ambos repeatable:
 
 `R__sp_process_order.sql` — lo que el backend llama al confirmar una compra: valida la cuenta, calcula el bruto, **invoca la función**, e inserta la orden y su evento web.
 
-```bash
-$ flyway migrate
-Migrating with repeatable migration
-  "fn calculate discount"
-Migrating with repeatable migration
-  "sp process order"
+Ya se aplicaron: **los repeatables corren siempre al final de cualquier `migrate`**, sin importar el `-target`. Fue la misma llamada del paso anterior.
+
+```text
+Migrating with repeatable migration "fn calculate discount"
+Migrating with repeatable migration "sp process order"
 ```
 
 </div>
@@ -312,7 +310,7 @@ Migrating with repeatable migration
 ### Facts
 
 - Se aplican en **orden alfabético**: `fn...` antes que `sp...`. Aquí funciona por suerte tipográfica — cuando el orden importe de verdad, hay que forzarlo con un prefijo numérico.
-- Cambia una línea del `.sql` y `flyway migrate` lo vuelve a aplicar solo. No hace falta archivo nuevo.
+- Cambia una línea del `.sql` y el próximo `flyway migrate` lo vuelve a aplicar solo. No hace falta archivo nuevo.
 
 </div>
 
