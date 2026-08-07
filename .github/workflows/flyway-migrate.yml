@@ -1,136 +1,191 @@
 # ---------------------------------------------------------------------------
-# Plantilla — Migración de esquema con Flyway vía GitHub Actions
+# Migración de schema con Flyway vía GitHub Actions
 #
 # Módulo: Tendencias emergentes en desarrollo de software (SI6010-5979)
 # Sesión de referencia: Cap_1_Fundamentos_DataOps/sesion_02_cicd_flyway
 #
-# Comportamiento:
-#   - Pull request  → `flyway validate` + `flyway migrate` contra el entorno DEV
-#   - Push a main   → `flyway migrate` contra el entorno PROD
-#   - Manual        → workflow_dispatch permite elegir el entorno
+# Qué hace: cada push a `main` que toque las migraciones aplica los cambios
+# pendientes sobre la branch `main` de Neon. Nadie se conecta a la base a mano.
 #
-# Secretos requeridos (Settings → Secrets and variables → Actions):
-#   FLYWAY_URL_DEV       jdbc:postgresql://<host>/<db>?sslmode=require
-#   FLYWAY_USER_DEV
-#   FLYWAY_PASSWORD_DEV
-#   FLYWAY_URL_PROD
-#   FLYWAY_USER_PROD
-#   FLYWAY_PASSWORD_PROD
+# Secreto requerido (Settings → Secrets and variables → Actions):
+#   NEON_MAIN_DATABASE_URL   postgresql://usuario:password@host/neondb?sslmode=require
 #
-# ⚠️ Esta es una PLANTILLA. Ajusta `MIGRATIONS_DIR` y los nombres de los secretos
-#    a la estructura real de tu repositorio antes de habilitarla.
+# Se guarda la URI tal como la entrega el Neon Console. El workflow la traduce
+# a los tres parámetros que Flyway espera. Ver el paso "Traducir la URI de Neon".
 # ---------------------------------------------------------------------------
 
 name: Flyway Migrate
 
+# ¿Por qué solo `push` a main y no también `pull_request`? Porque este workflow
+# escribe en la base de producción. Un pull request puede venir de un fork, y en
+# ese escenario GitHub no expone los secretos — el job fallaría de forma confusa.
+# La validación en PR es útil, pero se hace contra `dev` y con su propio secreto:
+# queda como ejercicio del Momento 1.
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'migrations/**'
-      - '.github/workflows/flyway-migrate.yml'
   push:
     branches: [main]
     paths:
-      - 'migrations/**'
+      - 'Cap_1_Fundamentos_DataOps/sesion_02_cicd_flyway/sql_migrations/**'
       - '.github/workflows/flyway-migrate.yml'
   workflow_dispatch:
-    inputs:
-      entorno:
-        description: 'Entorno destino de la migración'
-        required: true
-        type: choice
-        default: dev
-        options: [dev, prod]
 
-# Evita que dos migraciones corran simultáneamente contra la misma base de datos.
+# ¿Por qué `cancel-in-progress: false`? Es el valor que evita corrupción. Si dos
+# pushes seguidos dispararan dos migraciones simultáneas contra la misma base, la
+# segunda podría encontrar el schema a medio migrar. Este bloque las serializa.
+# Y cancelar una migración a mitad de camino es peor que esperarla: dejaría la
+# base en un estado que nadie registró.
 concurrency:
-  group: flyway-${{ github.ref }}
+  group: flyway-produccion
   cancel-in-progress: false
 
 env:
-  FLYWAY_VERSION: '13.1.0'
-  MIGRATIONS_DIR: migrations
+  FLYWAY_IMAGE: flyway/flyway:13.1.0-alpine
+  MIGRATIONS_DIR: Cap_1_Fundamentos_DataOps/sesion_02_cicd_flyway/sql_migrations
 
 jobs:
   migrate:
-    name: Aplicar migraciones
+    name: Aplicar migraciones a Neon (main)
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
       - name: Checkout del repositorio
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
-      # ---------------------------------------------------------------------
-      # Resuelve el entorno destino según el evento que disparó el workflow.
-      # ---------------------------------------------------------------------
-      - name: Determinar entorno destino
-        id: entorno
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            destino="${{ inputs.entorno }}"
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            destino="prod"
-          else
-            destino="dev"
-          fi
-          echo "destino=${destino}" >> "$GITHUB_OUTPUT"
-          echo "Entorno destino: ${destino}"
-
-      - name: Instalar Flyway CLI
-        run: |
-          curl -fsSL \
-            "https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz" \
-            -o flyway.tar.gz
-          tar -xzf flyway.tar.gz
-          echo "${GITHUB_WORKSPACE}/flyway-${FLYWAY_VERSION}" >> "$GITHUB_PATH"
-
-      - name: Verificar instalación
-        run: flyway --version
-
-      # ---------------------------------------------------------------------
-      # `validate` es la puerta de calidad: detecta migraciones ya aplicadas
-      # cuyo checksum cambió, y migraciones faltantes. Falla el job antes de
-      # tocar la base de datos.
-      # ---------------------------------------------------------------------
-      - name: Flyway validate
+      # -----------------------------------------------------------------------
+      # ¿Por qué hay que traducir la URI? Neon entrega un connection string en
+      # formato URI de PostgreSQL, con el usuario y la contraseña dentro de la
+      # propia cadena. Flyway corre sobre la JVM y usa JDBC, que espera un formato
+      # distinto y las credenciales por separado. Son dos convenciones para lo
+      # mismo, y traducir entre ellas es trabajo rutinario de integración:
+      #
+      #   Neon : postgresql://usuario:clave@host/neondb?sslmode=require
+      #   JDBC : jdbc:postgresql://host/neondb?sslmode=require  + user + password
+      #
+      # Guardamos un solo secreto con la URI completa en lugar de tres separados
+      # porque es lo que el Console te da: menos pasos manuales, menos formas de
+      # equivocarse al copiar.
+      # -----------------------------------------------------------------------
+      - name: Traducir la URI de Neon a parámetros JDBC
+        id: conexion
         env:
-          FLYWAY_URL: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_URL_PROD || secrets.FLYWAY_URL_DEV }}
-          FLYWAY_USER: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_USER_PROD || secrets.FLYWAY_USER_DEV }}
-          FLYWAY_PASSWORD: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_PASSWORD_PROD || secrets.FLYWAY_PASSWORD_DEV }}
+          NEON_URI: ${{ secrets.NEON_MAIN_DATABASE_URL }}
         run: |
-          flyway validate \
-            -locations="filesystem:${MIGRATIONS_DIR}" \
-            -validateMigrationNaming=true \
-            -ignoreMigrationPatterns='*:pending'
+          set -euo pipefail
+
+          if [ -z "${NEON_URI:-}" ]; then
+            echo "::error::El secreto NEON_MAIN_DATABASE_URL no está configurado."
+            echo "Configúralo en Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+          sin_protocolo="${NEON_URI#*://}"
+          credenciales="${sin_protocolo%%@*}"
+          servidor="${sin_protocolo#*@}"
+
+          usuario="${credenciales%%:*}"
+          clave="${credenciales#*:}"
+
+          host_y_db="${servidor%%\?*}"
+          host="${host_y_db%%/*}"
+          base="${host_y_db#*/}"
+
+          # ¿Por qué descartamos los parámetros originales de la URI y forzamos
+          # solo sslmode=require? Porque Neon añade `channel_binding=require`, que
+          # el driver JDBC de PostgreSQL no reconoce y rechaza al conectar. Los
+          # parámetros de conexión NO son portables entre drivers: cada uno acepta
+          # su propio conjunto.
+          jdbc="jdbc:postgresql://${host}/${base}?sslmode=require"
+
+          # ::add-mask:: es obligatorio aquí. GitHub oculta automáticamente el valor
+          # completo de un secreto en los logs, pero no sus fragmentos: la
+          # contraseña que acabamos de extraer es una subcadena y saldría en claro
+          # si algún comando la imprimiera. Esta línea la registra como sensible.
+          echo "::add-mask::${clave}"
+
+          echo "jdbc=${jdbc}"       >> "$GITHUB_OUTPUT"
+          echo "usuario=${usuario}" >> "$GITHUB_OUTPUT"
+          echo "clave=${clave}"     >> "$GITHUB_OUTPUT"
+
+          echo "Destino: ${host}/${base}"
+
+      # -----------------------------------------------------------------------
+      # ¿Por qué la imagen de Docker y no instalar el CLI? Porque la imagen trae
+      # Flyway, su JRE y los drivers JDBC ya resueltos y fijados a una versión.
+      # Descargar y descomprimir el CLI en cada run añade pasos que pueden fallar
+      # (un enlace caído, un checksum distinto) y no aporta nada. Además, correr
+      # exactamente la misma imagen en local y en CI elimina la clase entera de
+      # bugs del tipo "en mi máquina sí funciona".
+      # -----------------------------------------------------------------------
+      - name: Descargar la imagen de Flyway
+        run: docker pull "${FLYWAY_IMAGE}"
 
       - name: Flyway info (estado previo)
-        env:
-          FLYWAY_URL: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_URL_PROD || secrets.FLYWAY_URL_DEV }}
-          FLYWAY_USER: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_USER_PROD || secrets.FLYWAY_USER_DEV }}
-          FLYWAY_PASSWORD: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_PASSWORD_PROD || secrets.FLYWAY_PASSWORD_DEV }}
-        run: flyway info -locations="filesystem:${MIGRATIONS_DIR}"
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conexion.outputs.jdbc }}" \
+            -user="${{ steps.conexion.outputs.usuario }}" \
+            -password="${{ steps.conexion.outputs.clave }}" \
+            -locations="filesystem:/flyway/sql" \
+            info
+
+      # -----------------------------------------------------------------------
+      # `validate` es la puerta de calidad, y va ANTES de migrate a propósito:
+      # detecta que alguien editó una migración ya aplicada (checksum mismatch) y
+      # detiene el pipeline sin tocar la base. Sin este paso, el error aparecería
+      # a mitad de la migración, con parte de los cambios ya escritos.
+      # -----------------------------------------------------------------------
+      - name: Flyway validate
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conexion.outputs.jdbc }}" \
+            -user="${{ steps.conexion.outputs.usuario }}" \
+            -password="${{ steps.conexion.outputs.clave }}" \
+            -locations="filesystem:/flyway/sql" \
+            -validateMigrationNaming=true \
+            -ignoreMigrationPatterns='*:pending' \
+            validate
 
       - name: Flyway migrate
-        env:
-          FLYWAY_URL: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_URL_PROD || secrets.FLYWAY_URL_DEV }}
-          FLYWAY_USER: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_USER_PROD || secrets.FLYWAY_USER_DEV }}
-          FLYWAY_PASSWORD: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_PASSWORD_PROD || secrets.FLYWAY_PASSWORD_DEV }}
         run: |
-          flyway migrate \
-            -locations="filesystem:${MIGRATIONS_DIR}" \
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conexion.outputs.jdbc }}" \
+            -user="${{ steps.conexion.outputs.usuario }}" \
+            -password="${{ steps.conexion.outputs.clave }}" \
+            -locations="filesystem:/flyway/sql" \
+            -baselineOnMigrate=true \
+            -baselineVersion=1 \
+            -baselineDescription="Parch and Posey estado base" \
             -outOfOrder=false \
-            -cleanDisabled=true
+            -cleanDisabled=true \
+            migrate
 
-      # `if: always()` — queremos el estado final incluso si migrate falló.
+      # ¿Qué hacen esos tres flags de baseline? Resuelven el problema del primer
+      # run: la branch `main` de Neon ya tiene las tablas de la Sesión 1, pero no
+      # tiene flyway_schema_history. Sin baselineOnMigrate, Flyway vería una base
+      # con objetos que él no creó y abortaría. Con ellos, en la primera ejecución
+      # registra el estado actual como versión 1 y aplica lo que venga después.
+      # `cleanDisabled=true` bloquea `flyway clean`, que borraría el schema
+      # completo: en un pipeline que apunta a producción, no queremos ni que exista
+      # la posibilidad.
+
       - name: Flyway info (estado final)
         if: always()
-        env:
-          FLYWAY_URL: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_URL_PROD || secrets.FLYWAY_URL_DEV }}
-          FLYWAY_USER: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_USER_PROD || secrets.FLYWAY_USER_DEV }}
-          FLYWAY_PASSWORD: ${{ steps.entorno.outputs.destino == 'prod' && secrets.FLYWAY_PASSWORD_PROD || secrets.FLYWAY_PASSWORD_DEV }}
-        run: flyway info -locations="filesystem:${MIGRATIONS_DIR}"
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}/${MIGRATIONS_DIR}:/flyway/sql:ro" \
+            "${FLYWAY_IMAGE}" \
+            -url="${{ steps.conexion.outputs.jdbc }}" \
+            -user="${{ steps.conexion.outputs.usuario }}" \
+            -password="${{ steps.conexion.outputs.clave }}" \
+            -locations="filesystem:/flyway/sql" \
+            info
 
       - name: Resumen del run
         if: always()
@@ -140,8 +195,9 @@ jobs:
             echo ""
             echo "| Campo | Valor |"
             echo "|---|---|"
-            echo "| Entorno | \`${{ steps.entorno.outputs.destino }}\` |"
-            echo "| Evento | \`${{ github.event_name }}\` |"
+            echo "| Destino | Neon · branch \`main\` |"
+            echo "| Imagen | \`${FLYWAY_IMAGE}\` |"
+            echo "| Migraciones | \`${MIGRATIONS_DIR}\` |"
             echo "| Commit | \`${{ github.sha }}\` |"
             echo "| Estado | \`${{ job.status }}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
