@@ -38,15 +38,20 @@ no son ejercicios desconectados.
 
 ---
 
-## 2. El caso: Parch & Posey
+## 2. El caso: Parch & Posey (y el proyecto propio de cada equipo)
 
-Trabajamos sobre el dataset público **Parch & Posey**, un distribuidor ficticio de papel
-con tres líneas de producto. Es un modelo relacional pequeño (5 tablas: `accounts`,
-`orders`, `web_events`, `sales_reps`, `region`) pero suficientemente rico para plantear
-preguntas de negocio reales: rendimiento por representante comercial, atribución de canal
-web sobre las órdenes, estacionalidad de ventas por región.
+En clase trabajamos sobre el dataset público **Parch & Posey**, un distribuidor ficticio
+de papel con tres líneas de producto. Es un modelo relacional pequeño (5 tablas:
+`accounts`, `orders`, `web_events`, `sales_reps`, `regions`) pero suficientemente rico para
+enseñar cada técnica del módulo en vivo, con un caso compartido que permite comparar
+resultados entre estudiantes. Los datos semilla viven en [data/](data/).
 
-Los datos semilla viven en [data/](data/).
+**Parch & Posey es el vehículo pedagógico de las sesiones — no el entregable evaluativo.**
+A partir del Momento 1, cada equipo elige su **propio** ámbito de negocio y diseña su
+**propio** modelo transaccional, y repite sobre ese proyecto el mismo patrón enseñado en
+clase. Ese proyecto propio **continúa durante todo el módulo**: es la misma base que se
+lleva a Snowflake en el Momento 2 y se transforma con dbt en el Momento 3. Ver el
+[enunciado del Momento 1](evaluaciones/momento_1_cicd_bd.md) para el detalle.
 
 ---
 
@@ -162,7 +167,9 @@ Cada carpeta de sesión contiene:
 
 La nota final se compone de tres momentos evaluativos, cada uno sustentado en una sesión
 específica. **Los tres son acumulativos sobre el mismo pipeline**: el Momento 2 parte del
-entregable del Momento 1, y el Momento 3 integra todo.
+entregable del Momento 1, y el Momento 3 integra todo — y los tres se hacen sobre el mismo
+**proyecto propio de cada equipo** (dominio de negocio y modelo de datos elegidos en el
+Momento 1), no sobre Parch & Posey.
 
 | Momento | Tema | Peso | Se sustenta en | Enunciado |
 |---|---|---|---|---|

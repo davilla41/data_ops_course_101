@@ -29,7 +29,7 @@ criterio están detallados en la
 
 ## Checklist rápido de verificación
 
-Antes de calificar, confirmar sobre el repositorio del estudiante:
+Antes de calificar, confirmar sobre el repositorio del equipo:
 
 - [ ] Los objetos de Snowflake se crean desde scripts versionados, no desde la UI.
 - [ ] El proyecto Python tiene `pyproject.toml` **y** `uv.lock` en el repositorio.

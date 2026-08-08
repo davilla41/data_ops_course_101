@@ -8,8 +8,9 @@
 
 ## Objetivo
 
-Sustentar el pipeline End-to-End completo —de Neon a Streamlit— demostrando en vivo que un
-cambio en el código se propaga de forma trazable y automatizada hasta el dashboard.
+Sustentar el pipeline End-to-End completo —de Neon a Streamlit— sobre el **proyecto
+propio** de cada equipo, demostrando en vivo que un cambio en el código se propaga de
+forma trazable y automatizada hasta el dashboard.
 
 ## Formato
 

@@ -30,7 +30,7 @@ criterio están detallados en la
 
 ## Checklist rápido de verificación
 
-Antes de calificar, confirmar sobre el repositorio del estudiante:
+Antes de calificar, confirmar sobre el repositorio del equipo (el mismo desde el Momento 1):
 
 - [ ] `dbt build` corre limpio desde cero.
 - [ ] Los marts usan `ref()`; ningún mart consulta `source()` directamente.

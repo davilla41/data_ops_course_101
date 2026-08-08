@@ -26,17 +26,20 @@ Al terminar este momento, el estudiante debe poder responder con evidencia:
 
 ## 2. Contexto del caso
 
-Los Momentos 1 y 2 dejaron datos crudos de Parch & Posey aterrizando en Snowflake de forma
-automatizada. Pero nadie puede usarlos todavía: están en su forma normalizada de origen,
-sin lógica de negocio aplicada y sin garantías de calidad.
+Este momento, igual que los dos anteriores, se hace sobre el **proyecto propio** de cada
+equipo — el dominio de negocio y el modelo transaccional elegidos en el Momento 1, no sobre
+Parch & Posey (que en la Sesión 7 sigue siendo el ejemplo compartido de clase).
 
-La dirección comercial de Parch & Posey necesita responder preguntas concretas —
-rendimiento por representante y región, evolución de ventas por línea de producto,
-contribución de los canales web a las órdenes cerradas. El encargo es cerrar el camino:
-modelar, probar, automatizar y **entregar**.
+Los Momentos 1 y 2 dejaron los datos crudos del proyecto propio aterrizando en Snowflake de
+forma automatizada. Pero nadie puede usarlos todavía: están en su forma normalizada de
+origen, sin lógica de negocio aplicada y sin garantías de calidad.
+
+El negocio que el equipo definió en el Momento 1 necesita responder preguntas concretas
+sobre su propia operación — las mismas que motivaron el modelo de datos original. El
+encargo es cerrar el camino: modelar, probar, automatizar y **entregar** esas respuestas.
 
 > **Este momento integra los entregables de los Momentos 1 y 2.** No se evalúa como
-> proyecto independiente.
+> proyecto independiente, y no se evalúa sobre Parch & Posey.
 
 ---
 

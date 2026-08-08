@@ -24,17 +24,22 @@ Al terminar este momento, el estudiante debe poder responder con evidencia:
 
 ## 2. Contexto del caso
 
-El Momento 1 dejó una base de datos transaccional versionada y desplegada
+En clase trabajamos las Sesiones 4 y 5 sobre Parch & Posey, como ejemplo compartido. **Este
+momento evaluativo no se hace sobre Parch & Posey**: continúa sobre el **proyecto propio**
+de cada equipo — el dominio de negocio y el modelo transaccional que diseñaron y
+desplegaron en el Momento 1.
+
+El Momento 1 dejó esa base de datos transaccional versionada y desplegada
 automáticamente. Pero el equipo analítico no puede consultarla: las queries pesadas
 degradan el sistema operacional, y el modelo relacional normalizado no responde bien a
 preguntas agregadas.
 
-La solución es separar cargas: llevar los datos de Parch & Posey a **Snowflake**, donde el
-cómputo analítico escala independientemente. El encargo es construir ese camino de
+La solución es separar cargas: llevar los datos del proyecto propio a **Snowflake**, donde
+el cómputo analítico escala independientemente. El encargo es construir ese camino de
 ingesta.
 
 > **Este momento parte del entregable del Momento 1.** La fuente de datos es la base de
-> datos Neon que ya está versionada con Flyway.
+> datos Neon del proyecto propio del equipo, ya versionada con Flyway — no Parch & Posey.
 
 ---
 
@@ -49,8 +54,8 @@ ingesta.
 2. **Script de extracción en Python**, gestionado con `uv`:
    - Proyecto propio con su `pyproject.toml` y `uv.lock` (creado con `uv init` /
      `uv add`, **no** con `pip` ni `requirements.txt` escrito a mano).
-   - Se conecta a Neon, extrae las tablas de Parch & Posey y genera archivos planos
-     (CSV o similar) en una carpeta local de trabajo.
+   - Se conecta a Neon, extrae las tablas del modelo propio del equipo (el diseñado en el
+     Momento 1) y genera archivos planos (CSV o similar) en una carpeta local de trabajo.
    - Parametrizado por variables de entorno — cero credenciales en el código.
 3. **Carga vía Internal Stage**:
    - Creación del stage (`CREATE STAGE`).

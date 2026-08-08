@@ -8,7 +8,8 @@
 
 ## Objetivo
 
-Sustentar el pipeline de ingesta hacia Snowflake construido en las sesiones 4 y 5,
+Sustentar el pipeline de ingesta hacia Snowflake, construido con el patrón de las sesiones
+4 y 5 pero aplicado sobre el **proyecto propio** de cada equipo (el mismo del Momento 1),
 demostrando en vivo su ejecución completa y su idempotencia.
 
 ## Formato
