@@ -173,19 +173,7 @@ idempotencia. Mostrar la bitácora antes y después.
 
 ---
 
-## 7. Preguntas típicas de la sustentación
-
-1. ¿Por qué un Internal Stage y no un `INSERT` directo desde Python? ¿Cuál es el costo de
-   cada opción a 10 millones de filas?
-2. Tu `COPY INTO` falló a mitad de un archivo de 500 MB. ¿Qué quedó cargado?
-3. ¿Qué pasa con tu bitácora si el proceso se cae antes de escribir el registro final?
-4. ¿Cómo cambiarías el diseño si la carga tuviera que correr cada 15 minutos en lugar de
-   una vez al día?
-5. ¿Cuánto crédito de Snowflake consume tu pipeline? ¿Cómo lo reducirías?
-
----
-
-## 8. Recursos
+## 7. Recursos
 
 - Sesión 4 — [Ingesta hacia Snowflake](../Cap_2_Modern_Data_Warehouse/sesion_04_ingesta_snowflake/)
 - Sesión 5 — [Internal Stages](../Cap_2_Modern_Data_Warehouse/sesion_05_internal_stages/)

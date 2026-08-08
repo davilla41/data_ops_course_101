@@ -195,21 +195,7 @@ Luego, **10 minutos de preguntas** del docente y del grupo.
 
 ---
 
-## 7. Preguntas típicas de la sustentación
-
-1. Un usuario dice que el dashboard muestra un número equivocado. Descríbeme tu proceso de
-   diagnóstico, tramo por tramo.
-2. Llega un registro con fecha de hace tres meses después de tu última corrida
-   incremental. ¿Entra a tu mart? ¿Cómo lo sabes?
-3. ¿Qué test escribirías para detectar que la fuente dejó de enviar datos, sin fallar por
-   otra razón?
-4. Si tuvieras que entregar este pipeline a otro equipo mañana, ¿qué falta?
-5. ¿Cuál es el eslabón más frágil de tu arquitectura? ¿Por qué lo dejaste así?
-6. ¿Qué habrías hecho distinto si el volumen fuera 1000× mayor?
-
----
-
-## 8. Criterio integrador
+## 7. Criterio integrador
 
 Más allá de la rúbrica por componentes, se valora que el pipeline **funcione como un
 sistema**: que un cambio en el origen se propague de forma trazable hasta el consumo, que
@@ -221,7 +207,7 @@ objetivo del módulo**.
 
 ---
 
-## 9. Recursos
+## 8. Recursos
 
 - Sesión 7 — [dbt e incremental models](../Cap_3_Transformacion_Entrega/sesion_07_dbt_incremental/)
 - Momento 1 — [CI/CD en Base de Datos](momento_1_cicd_bd.md)
