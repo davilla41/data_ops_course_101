@@ -158,6 +158,7 @@ completo. Los puntos que se discuten en clase:
 | **Detectar drift antes de llamar a `write_pandas`** | Fallar con un mensaje propio y el DDL ya redactado es mejor que dejar que Snowflake falle tres capas más abajo con "invalid identifier". |
 | **Generar el DDL, no ejecutarlo solo** | Alterar un schema de producción sin que nadie lo revise es su propio riesgo — el mismo principio del rol de servicio sin privilegios de administración. |
 | **Rol `DATAOPS_LOADER`, nunca `ACCOUNTADMIN`** | Un error en el script (o una credencial filtrada) con ese rol es un incidente de cuenta completa, no de una tabla. |
+| **`pandas>=2.1.2,<3.0.0`** fijado explícitamente | `write_pandas` necesita el extra `snowflake-connector-python[pandas]` (trae `pyarrow`), y ese extra exige `pandas<3.0.0`. Sin el límite superior, `uv add` instala la última pandas (3.x), incompatible, y el conector falla en tiempo de ejecución con `MissingDependencyError`. |
 
 ---
 
