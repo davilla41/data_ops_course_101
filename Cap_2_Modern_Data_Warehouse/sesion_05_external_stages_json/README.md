@@ -79,10 +79,14 @@ Ninguna nueva — todo corre en Snowsight, en el navegador.
 | Ruta | Qué es |
 |---|---|
 | [presentacion/presentacion.md](presentacion/presentacion.md) | Presentación en Marp (20 slides) |
-| [codigo/01_setup_stage_and_raw.sql](codigo/01_setup_stage_and_raw.sql) | File Format, External Stage, tabla `RAW_LEADS`, primer `COPY INTO` |
-| [codigo/02_flatten_query_exploration.sql](codigo/02_flatten_query_exploration.sql) | Notación de punto, `LATERAL FLATTEN`, tabla `STG_LEADS_FLATTENED` |
-| [codigo/03_tasks_and_dag_management.sql](codigo/03_tasks_and_dag_management.sql) | DAG de dos tareas, `EXECUTE TASK`, `TASK_HISTORY`, administración |
-| [codigo/04_rbac_and_masking.sql](codigo/04_rbac_and_masking.sql) | Tres roles, una Masking Policy, demo de visibilidad diferenciada |
+| `codigo/01_setup_stage_and_raw.sql` | File Format, External Stage, tabla `RAW_LEADS`, primer `COPY INTO` |
+| `codigo/02_flatten_query_exploration.sql` | Notación de punto, `LATERAL FLATTEN`, tabla `STG_LEADS_FLATTENED` |
+| `codigo/03_tasks_and_dag_management.sql` | DAG de dos tareas, `EXECUTE TASK`, `TASK_HISTORY`, administración |
+| `codigo/04_rbac_and_masking.sql` | Tres roles, una Masking Policy, demo de visibilidad diferenciada |
+
+> 🚧 **Los 4 scripts se entregan uno por uno, antes de cada bloque del taller** — no están
+> en el repositorio todavía a propósito. Ya están escritos y verificados contra Snowflake
+> real; se revelan progresivamente en clase en vez de estar disponibles desde el día uno.
 
 No hay carpeta `.env` ni proyecto `uv` en esta sesión — es SQL puro, sin credenciales de
 Python que gestionar.
@@ -143,19 +147,12 @@ mientras el bucket público se termina de configurar) — no son advertencias te
 ## Relación con el Momento Evaluativo 2
 
 El pipeline de hoy corre sobre **Parch & Posey** y un dataset de mercadeo de ejemplo, como
-material de clase. Para tu entregable del
-[Momento 2 — Cloud DW e Ingesta](../../evaluaciones/momento_2_cloud_dw.md) (30 % de la nota
-final, se sustenta el **sábado 22/08/2026**), el patrón de esta sesión es opcional pero
-valioso: si el dominio de negocio de tu equipo tiene algún dato semi-estructurado o alguna
-PII que proteger, replicar External Stages + RBAC + Masking sobre tu propio proyecto
-demuestra dominio más allá de lo mínimo pedido.
-
-> ℹ️ **Nota de alcance.** El enunciado del Momento 2 fue redactado antes de que esta sesión
-> cambiara de Internal Stages (carga relacional idempotente) a External Stages + JSON +
-> gobernanza. La rúbrica del Momento 2 sigue evaluando explícitamente Internal Stages,
-> `PUT`/`COPY INTO` e idempotencia — contenido que ahora **no se enseña en ninguna sesión**
-> del capítulo. Es una decisión pendiente de resolver antes del 22/08: ajustar la rúbrica
-> del Momento 2, o cubrir Internal Stages/idempotencia como complemento en otro momento.
+material de clase. El [Momento 2 — Cloud DW e Ingesta](../../evaluaciones/momento_2_cloud_dw.md)
+(30 % de la nota final, se sustenta el **sábado 22/08/2026**) exige repetir **el mismo
+patrón de las Sesiones 4 y 5** —arquitectura como código, extracción relacional con `uv`,
+ingesta de al menos una fuente semi-estructurada vía External Stage, orquestación con
+Tasks, y gobernanza con RBAC y Masking— sobre el **proyecto propio** de cada equipo, no
+sobre Parch & Posey. Ver el enunciado completo para el detalle exacto de cada criterio.
 
 ---
 

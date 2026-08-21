@@ -173,9 +173,9 @@ tu entregable evaluativo, repites este mismo patrón —aprovisionamiento como c
 con `uv`, manejo de schema drift— sobre el **proyecto propio** de tu equipo, el mismo
 dominio de negocio y modelo transaccional del Momento 1.
 
-Lo que todavía falta para el entregable completo lo cubre la Sesión 5: idempotencia real
-(hoy usamos `overwrite=True`, que trunca y recarga todo — no escala), bitácora de
-ejecución y validaciones automatizadas.
+Lo que todavía falta para el entregable completo lo cubre la Sesión 5: ingesta de datos
+semi-estructurados (no todo en tu dominio va a venir en forma relacional), orquestación
+nativa con Tasks, y gobernanza sobre lo que resulte sensible.
 
 ---
 

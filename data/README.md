@@ -86,21 +86,12 @@ Comprobado el 31/07/2026 sobre los cinco archivos:
 
 ## Un segundo dataset: leads de mercadeo (Sesión 5)
 
-`marketing_leads_20260814.json`, `marketing_leads_20260821.json` y
-`marketing_leads_20260828.json` son un dataset **independiente** de Parch & Posey — tres
-exports semanales sintéticos de campañas de mercadeo, usados en la
-[Sesión 5](../Cap_2_Modern_Data_Warehouse/sesion_05_external_stages_json/) para practicar
-ingesta de JSON semi-estructurado (`VARIANT` + `LATERAL FLATTEN`).
+La [Sesión 5](../Cap_2_Modern_Data_Warehouse/sesion_05_external_stages_json/) usa un
+dataset **independiente** de Parch & Posey — un export sintético de campañas de
+mercadeo en JSON semi-estructurado — para practicar `VARIANT` y `LATERAL FLATTEN`.
 
-Cada archivo es un array de campañas con un array anidado de contactos
-(`high_profile_contacts`), incluyendo PII sintética (teléfono, dirección) usada más
-adelante para la demo de Dynamic Data Masking. Las claves varían entre archivos a
-propósito — no todos los contactos tienen `social_media_handle` o
-`preferred_contact_method` — para ilustrar la flexibilidad de schema-on-read frente al
-schema-on-write relacional del resto del módulo.
-
-Para el taller, estos archivos deben subirse a un bucket S3 de lectura pública — ver la
-Sesión 5 y `TESTING_PLAN_E2E.md` §5.4 para el procedimiento exacto.
+> 🚧 **No está en el repositorio todavía.** Se entrega en clase, no antes — ver el README
+> de la Sesión 5.
 
 ## Origen y licencia
 

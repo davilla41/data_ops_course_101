@@ -174,7 +174,7 @@ Momento 1), no sobre Parch & Posey.
 | Momento | Tema | Peso | Se sustenta en | Enunciado |
 |---|---|---|---|---|
 | **1** | CI/CD en Base de Datos (Neon + Flyway + GitHub Actions) | **30 %** | Sesión 3 — viernes 14/08/2026 | [momento_1_cicd_bd.md](evaluaciones/momento_1_cicd_bd.md) |
-| **2** | Cloud DW e Ingesta (Snowflake + Internal Stages) | **30 %** | Sesión 6 — sábado 22/08/2026 | [momento_2_cloud_dw.md](evaluaciones/momento_2_cloud_dw.md) |
+| **2** | Cloud DW e Ingesta (Snowflake: relacional + semi-estructurado + gobernanza) | **30 %** | Sesión 6 — sábado 22/08/2026 | [momento_2_cloud_dw.md](evaluaciones/momento_2_cloud_dw.md) |
 | **3** | End-to-End DataOps (dbt + Streamlit) | **40 %** | Sesión 8 — sábado 29/08/2026 | [momento_3_e2e_dataops.md](evaluaciones/momento_3_e2e_dataops.md) |
 | | | **100 %** | | |
 
