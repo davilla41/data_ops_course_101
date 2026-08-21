@@ -1,0 +1,35 @@
+[
+  {
+    "campaign_id": "CMP-2026-08A",
+    "campaign_name": "Summer High-Profile Outreach",
+    "target_website": "www.walmart.com",
+    "budget_spent_usd": 1500.50,
+    "high_profile_contacts": [
+      {
+        "name": "Evelyn Harper",
+        "phone": "+1-555-0198",
+        "personal_address": "123 Elite Way, NY"
+      },
+      {
+        "name": "Marcus Vance",
+        "phone": "+1-555-0299",
+        "personal_address": "456 Executive Blvd, CA"
+      }
+    ],
+    "utm_source": "linkedin"
+  },
+  {
+    "campaign_id": "CMP-2026-08A",
+    "campaign_name": "Summer High-Profile Outreach",
+    "target_website": "www.exxonmobil.com",
+    "budget_spent_usd": 850.00,
+    "high_profile_contacts": [
+      {
+        "name": "Julian Reyes",
+        "phone": "+1-555-0344",
+        "personal_address": "789 Oil Rig Ln, TX"
+      }
+    ],
+    "utm_source": "google"
+  }
+]

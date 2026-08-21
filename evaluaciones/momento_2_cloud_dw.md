@@ -176,7 +176,7 @@ idempotencia. Mostrar la bitácora antes y después.
 ## 7. Recursos
 
 - Sesión 4 — [Ingesta hacia Snowflake](../Cap_2_Modern_Data_Warehouse/sesion_04_ingesta_snowflake/)
-- Sesión 5 — [Internal Stages](../Cap_2_Modern_Data_Warehouse/sesion_05_internal_stages/)
+- Sesión 5 — [External Stages, JSON y gobernanza](../Cap_2_Modern_Data_Warehouse/sesion_05_external_stages_json/)
 - Snowflake — `COPY INTO <table>`: https://docs.snowflake.com/en/sql-reference/sql/copy-into-table
 - Snowflake — Internal Stages: https://docs.snowflake.com/en/user-guide/data-load-local-file-system-create-stage
 - `uv` — gestión de proyectos: https://docs.astral.sh/uv/guides/projects/

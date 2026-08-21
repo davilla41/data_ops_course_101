@@ -191,7 +191,8 @@ npx @marp-team/marp-cli@latest \
 
 ## Próxima sesión
 
-**[Sesión 5 — Internal Stages e idempotencia](../sesion_05_internal_stages/)** · 21/08/2026.
-`write_pandas` funciona para esta escala, pero la carga masiva de verdad en Snowflake pasa
-por `PUT` + `COPY INTO`, con una estrategia de idempotencia explícita y una bitácora que
-registre cada ejecución.
+**[Sesión 5 — External Stages, JSON y gobernanza](../sesion_05_external_stages_json/)** ·
+21/08/2026. Hoy resolvimos datos relacionales con schema fijo. La Sesión 5 cambia de
+paradigma: datos semi-estructurados (JSON de mercadeo) que aterrizan en un `VARIANT` sin
+esquema previo, se aplanan con `LATERAL FLATTEN`, se orquestan con Tasks nativas de
+Snowflake, y se protegen con RBAC y Dynamic Data Masking sobre la PII.

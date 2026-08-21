@@ -42,7 +42,7 @@ data/
 **Total: 16 390 registros.** Los cinco JSON **se versionan**: son pequeños y constituyen la
 fuente de verdad del caso. `output/` **no** se versiona (excluido en
 [.gitignore](../.gitignore)); ahí escriben los scripts de extracción de la Sesión 4 antes de
-subir a un Internal Stage.
+cargar a Snowflake.
 
 ### Forma de los datos
 
@@ -81,8 +81,26 @@ Comprobado el 31/07/2026 sobre los cinco archivos:
 |---|---|
 | 1 — Estado base | Carga inicial en la branch `dev` de Neon vía [`inyeccion_semilla.py`](../Cap_1_Fundamentos_DataOps/sesion_01_estado_base/codigo/inyeccion_semilla.py) |
 | 2 — CI/CD con Flyway | El schema de estas tablas es el baseline de las migraciones |
-| 4 y 5 — Ingesta | Se extraen desde Neon y se cargan a Snowflake vía Internal Stage |
+| 4 — Ingesta relacional | Se extraen desde Neon y se cargan a Snowflake con `write_pandas` |
 | 7 — dbt | Son las `sources` del proyecto de transformación |
+
+## Un segundo dataset: leads de mercadeo (Sesión 5)
+
+`marketing_leads_20260814.json`, `marketing_leads_20260821.json` y
+`marketing_leads_20260828.json` son un dataset **independiente** de Parch & Posey — tres
+exports semanales sintéticos de campañas de mercadeo, usados en la
+[Sesión 5](../Cap_2_Modern_Data_Warehouse/sesion_05_external_stages_json/) para practicar
+ingesta de JSON semi-estructurado (`VARIANT` + `LATERAL FLATTEN`).
+
+Cada archivo es un array de campañas con un array anidado de contactos
+(`high_profile_contacts`), incluyendo PII sintética (teléfono, dirección) usada más
+adelante para la demo de Dynamic Data Masking. Las claves varían entre archivos a
+propósito — no todos los contactos tienen `social_media_handle` o
+`preferred_contact_method` — para ilustrar la flexibilidad de schema-on-read frente al
+schema-on-write relacional del resto del módulo.
+
+Para el taller, estos archivos deben subirse a un bucket S3 de lectura pública — ver la
+Sesión 5 y `TESTING_PLAN_E2E.md` §5.4 para el procedimiento exacto.
 
 ## Origen y licencia
 
