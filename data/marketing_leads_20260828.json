@@ -1,0 +1,33 @@
+[
+  {
+    "campaign_id": "CMP-2026-08C",
+    "campaign_name": "Retail Expansion Q3",
+    "target_website": "www.cvshealth.com",
+    "budget_spent_usd": 1100.25,
+    "high_profile_contacts": [
+      {
+        "name": "Dr. Alan Grant",
+        "phone": "+1-555-0912",
+        "personal_address": "101 Pharmacy Ave, RI",
+        "social_media_handle": "@agrant_health"
+      }
+    ],
+    "utm_source": "direct"
+  },
+  {
+    "campaign_id": "CMP-2026-08C",
+    "campaign_name": "Retail Expansion Q3",
+    "target_website": "www.amazon.com",
+    "budget_spent_usd": 4500.00,
+    "high_profile_contacts": [
+      {
+        "name": "Diana Prince",
+        "phone": "+1-555-1123",
+        "personal_address": "202 Prime St, WA",
+        "social_media_handle": "@dprince_amz",
+        "preferred_contact_method": "phone"
+      }
+    ],
+    "utm_source": "linkedin"
+  }
+]
